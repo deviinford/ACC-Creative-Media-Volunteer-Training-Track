@@ -565,24 +565,25 @@
 
   /* ── Firebase: Save volunteer ── */
   window.saveVolunteer = async function() {
-    const name = document.getElementById('vol-name').value.trim();
-    if (!name) { alert('Enter a volunteer name first.'); return; }
-    const notes = document.getElementById('vol-notes').value.trim();
-    const department = document.getElementById('vol-dept').value;
-    const updatedAt = new Date().toISOString();
-    setStatus('saving', 'Saving...');
-    try {
-      const id = name.toLowerCase().replace(/[^a-z0-9]/g, '_');
-      await setDoc(doc(db, 'volunteers', id), {
-        name, levels: { ...levels }, skillNotes: { ...skillNotes },
-        notes, department, updatedAt
-      });
-      showLastUpdated(updatedAt);
-      setStatus('saved', 'Saved and synced!');
-    } catch(e) {
-      setStatus('error', 'Could not save. Check your connection.');
-    }
-  };
+  const name = document.getElementById('vol-name').value.trim();
+  if (!name) { alert('Enter a volunteer name first.'); return; }
+  const notes = document.getElementById('vol-notes').value.trim();
+  const department = document.getElementById('vol-dept').value;
+  const updatedAt = new Date().toISOString();
+  setStatus('saving', 'Saving...');
+  try {
+    const id = name.toLowerCase().replace(/[^a-z0-9]/g, '_');
+    await setDoc(doc(db, 'volunteers', id), {
+      name, levels: { ...levels }, skillNotes: { ...skillNotes },
+      notes, department, updatedAt,
+      skills: JSON.parse(JSON.stringify(skills))
+    });
+    showLastUpdated(updatedAt);
+    setStatus('saved', 'Saved and synced!');
+  } catch(e) {
+    setStatus('error', 'Could not save. Check your connection.');
+  }
+};
 
   /* ── Firebase: Volunteers list ── */
   window.openVolunteers = async function() {
@@ -614,23 +615,27 @@
   };
 
   window._loadVol = async function(id) {
-    try {
-      const snap = await getDoc(doc(db, 'volunteers', id));
-      if (!snap.exists()) return;
-      const v = snap.data();
-      document.getElementById('vol-name').value = v.name;
-      document.getElementById('vol-notes').value = v.notes || '';
-      document.getElementById('vol-dept').value = v.department || '';
-      levels = {};
-      skillNotes = {};
-      skills.forEach(s => { levels[s.name] = 0; skillNotes[s.name] = ''; });
-      Object.assign(levels, v.levels || {});
-      Object.assign(skillNotes, v.skillNotes || {});
-      showLastUpdated(v.updatedAt || null);
-      render();
-      document.getElementById('vol-modal').classList.remove('open');
-    } catch(e) { alert('Could not load volunteer.'); }
-  };
+  try {
+    const snap = await getDoc(doc(db, 'volunteers', id));
+    if (!snap.exists()) return;
+    const v = snap.data();
+    document.getElementById('vol-name').value = v.name;
+    document.getElementById('vol-notes').value = v.notes || '';
+    document.getElementById('vol-dept').value = v.department || '';
+    if (v.skills && v.skills.length > 0) {
+      skills = v.skills;
+      saveSkillsLocal();
+    }
+    levels = {};
+    skillNotes = {};
+    skills.forEach(s => { levels[s.name] = 0; skillNotes[s.name] = ''; });
+    Object.assign(levels, v.levels || {});
+    Object.assign(skillNotes, v.skillNotes || {});
+    showLastUpdated(v.updatedAt || null);
+    render();
+    document.getElementById('vol-modal').classList.remove('open');
+  } catch(e) { alert('Could not load volunteer.'); }
+};
 
   window._deleteVol = async function(id, name) {
     if (!confirm(`Delete "${name}"?`)) return;
