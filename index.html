@@ -649,7 +649,7 @@
     const sel = document.getElementById('skill-view-select');
     const current = sel.value;
     sel.innerHTML = '<option value="">— Select a skill —</option>';
-    skills.filter(s => s.enabled).forEach(s => {
+    skills.forEach(s => {
       const opt = document.createElement('option');
       opt.value = s.name; opt.textContent = s.name;
       sel.appendChild(opt);
