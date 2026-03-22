@@ -565,6 +565,7 @@
   let tmplEditDept = null;
   let tmplEditSkills = [];
   let isNewVolunteer = true;
+  let hasUnsavedChanges = false;
 
   skills.forEach(s => { levels[s.name] = 0; skillNotes[s.name] = ''; });
 
@@ -639,6 +640,7 @@
         const oldLvl = levels[skill.name]||0;
         const newLvl = (oldLvl+1)%LEVELS.length;
         levels[skill.name] = newLvl;
+        hasUnsavedChanges = true;
         // Record training history — upsert by skill name (one entry per skill)
         if (oldLvl !== newLvl) {
           // Only update the 'from' if this skill hasn't been touched yet this session
@@ -671,6 +673,7 @@
     const text = ta.value.trim();
     if (!text) return;
     notesHistory.unshift({ text, date: new Date().toISOString() });
+    hasUnsavedChanges = true;
     ta.value = '';
     renderNotesHistory();
   };
@@ -878,7 +881,9 @@
       });
       showLastUpdated(updatedAt);
       isNewVolunteer = false;
+      hasUnsavedChanges = false;
       setStatus('saved','Saved and synced!');
+      hasUnsavedChanges = false;
     } catch(e) { setStatus('error','Could not save. Check your connection.'); }
   };
 
@@ -929,6 +934,7 @@
 
   window._loadVol = async function(id) {
     try {
+      if (!guardUnsaved('This volunteer has unsaved changes. Load a different volunteer anyway?')) return;
       const snap = await getDoc(doc(db,'volunteers',id));
       if (!snap.exists()) return;
       loadVolunteerData(snap.data());
@@ -1120,8 +1126,13 @@
 
   /* ── NEW VOLUNTEER ── */
   let nvSkills = []; // working copy for the modal
-
+  
+function guardUnsaved(message) {
+  if (!hasUnsavedChanges) return true;
+  return confirm(message || 'You have unsaved changes. Continue without saving?');
+}
   window.openNewVolunteer = function() {
+    if (!guardUnsaved('You have unsaved changes. Create a new volunteer anyway?')) return;
     document.getElementById('nv-name').value = '';
     document.getElementById('nv-dept').value = '';
     document.getElementById('nv-dept-notice').style.display = 'none';
