@@ -19,6 +19,7 @@
     .app{display:flex;flex-direction:column;min-height:100vh;}
 
      function getCellStyle(bg, fg="#000000") {
+function getCellStyle(bg, fg="#000000") {
   return {
     fill: {
       patternType: "solid",
@@ -31,6 +32,12 @@
     alignment: {
       horizontal: "center",
       vertical: "center"
+    },
+    border: {
+      top: { style: "thin", color: { rgb: "FF000000" } },
+      bottom: { style: "thin", color: { rgb: "FF000000" } },
+      left: { style: "thin", color: { rgb: "FF000000" } },
+      right: { style: "thin", color: { rgb: "FF000000" } }
     }
   };
 }
