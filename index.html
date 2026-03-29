@@ -1031,7 +1031,12 @@ const SKILL_STYLES = {
         const enabled=new Set((v.skills||skills).filter(s=>s.enabled).map(s=>s.name));
         for(let C=2;C<=range.e.c;C++){
           const sn=allSkillNames[C-2]; if(!sn) continue;
-          const cellRef=XLSX.utils.encode_cell({r:R,c:C});
+          const style = SKILL_STYLES[skillLevel];
+
+ws[cellRef] = {
+  v: skillLevel,
+  s: style ? getCellStyle(style.bg, style.fg) : getCellStyle("FFFFFF","000000")
+};
           if(!ws[cellRef]) continue;
           if(!enabled.has(sn)){ws[cellRef].s={font:{color:{rgb:'9A8060'}},alignment:{horizontal:'center'}};continue;}
           const lvl=v.levels?.[sn]||0, L=LEVELS[lvl];
