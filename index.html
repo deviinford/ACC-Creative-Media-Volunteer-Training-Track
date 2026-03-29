@@ -609,6 +609,7 @@ function getCellStyle(bg, fg="#000000") {
       <div class="confirm-modal-logo">TT</div>
       <div class="confirm-modal-title">Export spreadsheet</div>
     </div>
+    ws['!cols'] = Object.keys(data[0]).map(() => ({ wch: 20 }));
     <div class="export-picker-body">
       <button class="export-option-btn" onclick="doExportXLSX()">
         <span class="export-opt-icon">&#128200;</span>
