@@ -18,6 +18,23 @@
     body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
     .app{display:flex;flex-direction:column;min-height:100vh;}
 
+     function getCellStyle(bg, fg="#000000") {
+  return {
+    fill: {
+      patternType: "solid",
+      fgColor: { rgb: "FF" + bg.replace("#","") }
+    },
+    font: {
+      bold: true,
+      color: { rgb: "FF" + fg.replace("#","") }
+    },
+    alignment: {
+      horizontal: "center",
+      vertical: "center"
+    }
+  };
+}
+
     /* HEADER */
     .app-header{background:var(--gold);padding:18px 28px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;position:sticky;top:0;z-index:50;}
     .header-left{display:flex;align-items:center;gap:16px;cursor:pointer;user-select:none;}
