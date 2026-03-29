@@ -1031,7 +1031,10 @@
       const wl=XLSX.utils.aoa_to_sheet(legendData);
       LEVELS.forEach((l,i)=>{
         const ref=XLSX.utils.encode_cell({r:i+1,c:0});
-        if(wl[ref]) wl[ref].s={fill:{patternType:'solid',fgColor:{rgb:l.xlsxBg}},font:{bold:true,color:{rgb:l.xlsxFg}}};
+        wl[ref].s = {
+  fill:{patternType:'solid', fgColor:{rgb:"FF" + l.xlsxBg}},
+  font:{bold:true,color:{rgb:"FF" + l.xlsxFg}}
+};
       });
       wl['!cols']=[{wch:32},{wch:10}];
       XLSX.utils.book_append_sheet(wb,wl,'Level Key');
